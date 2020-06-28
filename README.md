@@ -56,7 +56,7 @@ BLANKのページにREST APIを使用した拡張機能を追加することが�
 BLANKページには独自クラス`CustomizedContentPage`を使用しておりますが、このクラスはXamarin.Formsの`ContentPage`クラスを継承しておりますので、
 通常の`ContentPage`と同じようにUIパーツを追加することができます。
 
-### Blankージの追加
+### Blankページの追加
 
 1. BlankPage.xamlとBlankPage.xaml.csを複製し、それぞれBlankPageとなっている箇所を別名に書き換えます。（仮に書き換えた別名を`BlankPage2`とします。）
 
