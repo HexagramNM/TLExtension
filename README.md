@@ -2,7 +2,7 @@
 
 ## 概要
 
-![image1](sample1.png) ![image2](sample2.png)
+![image1](sample1.png)![image2](sample2.png)
 
 Twitter Liteに対し、下記の拡張を行ったXamarin.Forms製のAndroidアプリケーションです。その他[CoreTweet](https://github.com/CoreTweet/CoreTweet/wiki/Home(%E6%97%A5%E6%9C%AC%E8%AA%9E)), PCLStorageを使用しております。
 
@@ -33,7 +33,7 @@ Twitter Liteに対し、下記の拡張を行ったXamarin.Forms製のAndroidア
 6. プロジェクトのAndroidフォルダ内にあるAssetsフォルダに、このリポジトリのTLExtension.Android/Assets/CRTV_main.jsを追加します。
 最終的に、プロジェクトのファイル構成が以下のようになっていれば、大丈夫です。
 
-![project](project.png)
+![project](project.PNG)
 
 7. TLExtension/App.xaml.cs内のAppクラスにstatic変数`cKey`と`cSecret`があるので、`cKey`に1で生成したConsumer Keyを、`cSecret`に1で生成した
 Consumer Secretを入れてください。
@@ -66,7 +66,7 @@ BLANKページには独自クラス`CustomizedContentPage`を使用しており�
 
 App.xaml.csの`App`クラス、CustomizedContentPage.cs内の`CustomizedContentPage`クラスにあるメソッド、変数を利用して、機能を追加します。
 
-## Blankページで使用できる`App`クラス、`CustomizedContent`クラスで使える変数、メソッド
+## Blankページで使用できる`App`クラス、`CustomizedContent`クラスの変数、メソッド
 
 ### `bool CustomizedContent.authorized`
 
