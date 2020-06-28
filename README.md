@@ -10,6 +10,10 @@ Twitter Liteに対し、下記の拡張を行ったXamarin.Forms製のAndroidア
 
 - 引用RT検索機能（ツイート表示画面に引用RT検索のリンクが追加されます。）
 
+    - 公式の機能とは違い、1番上以外の引用RTに含まれる重複する元ツイートは非表示になります。
+    
+    - 公式の検索を利用するので、「話題になっている順」、「最新順」と順番をソートすることができます。
+
 - 画像や動画のダウンロード（画像の拡大表示、動画のあるツイートの表示画面に移動すると、"DOWNLOAD LAST IMAGE"の右に表示したメディアが表示され、ボタンを押すとそのメディアがダウンロードされます。）
 
 - Twitter REST APIとの認証機能（BlankのページのところにAPIを使用した拡張をこのアプリに追加実装することができます。）
@@ -56,9 +60,7 @@ BLANKページには独自クラス`CustomizedContentPage`を使用しており�
 
 1. BlankPage.xamlとBlankPage.xaml.csを複製し、それぞれBlankPageとなっている箇所を別名に書き換えます。（仮に書き換えた別名を`BlankPage2`とします。）
 
-2. TabbedPage1.xamlの`<local:BlankPage Title="Blank" />`の次の行に以下を追加します。
-
-`<local:BlankPage2 Title="Blank2" />`
+2. TabbedPage1.xamlの`<local:BlankPage Title="Blank" />`の次の行に`<local:BlankPage2 Title="Blank2" />`を追加します。
 
 これで、Blank2という新しいタブができ、BlankPage2がアプリケーションに追加されます。
 
