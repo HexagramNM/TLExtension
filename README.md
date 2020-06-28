@@ -80,7 +80,8 @@ REST APIを操作するために必要なトークンが格納され、このト
 
 ### `static void App.addCustomSetting(View view)`
 
-※*使用する場合はBlankクラスのコンストラクタで使用してください。*
+**※使用する場合はBlankクラスのコンストラクタで使用してください。**
+
 Blankページに追加する機能の設定をSettingページに追加するために使用します。引数で指定したUIパーツをSettingページに追加します。
 
 ### `static void App.registerStartEvent(StartEventHandler action)`
