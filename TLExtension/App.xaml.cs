@@ -25,12 +25,23 @@
 //DCIMのパス取得
 //https://forums.xamarin.com/discussion/175085/i-need-to-save-ad-in-image-in-dcim
 
+//別ブラウザでURLを開く方法
+//https://itblogdsi.blog.fc2.com/blog-entry-171.html
 
 //FormsWebChromeClient関連（フルスクリーンとOpenDocumentはFormsWebChromeClientクラスを使うので
 //競合する。うまく、同一クラス内でまとめる必要あり。）
 
 //フルスクリーンの情報
 //https://github.com/mhaggag/XFAndroidFullScreenWebView
+
+/* フルスクリーン関連の著作権表示
+Copyright (c) 2018 Muhammad Haggag
+
+Released under the MIT License
+
+https://github.com/mhaggag/XFAndroidFullScreenWebView/blob/master/LICENSE.md
+
+*/
 
 //HTMLの<input>をクリックし、OpenDocumentを呼び出す際のIntentを修正する方法
 //（読み込むべきファイルタイプの変更）

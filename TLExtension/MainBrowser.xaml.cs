@@ -96,7 +96,7 @@ namespace TLExtension
             if (imagePageNum != -1)
             {
                 String keyImageUrlSentence = "https://pbs.twimg.com/media/";
-                String tmpPageHTML = new String(currentDetectHTML);
+                String tmpPageHTML = String.Copy(currentDetectHTML);
                 int imageUrlIndex = -1;
                 for (int idx = 0; idx < imagePageNum - 1; idx++)
                 {

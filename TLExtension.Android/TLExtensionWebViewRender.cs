@@ -38,7 +38,6 @@ namespace TLExtension.Droid
                 Control.SetWebViewClient(new JavascriptWebViewClient($"javascript: {JavascriptFunction}", this));
                 Control.SetWebChromeClient(webClient);
                 Control.AddJavascriptInterface(new JSBridge(this), "jsBridge");
-                Control.LoadUrl(((TLExtensionWebView)Element).Uri);
             }
             _webView = (TLExtensionWebView)e.NewElement;
             _webView.reloadAction = new Action(() => { Control.Reload(); });

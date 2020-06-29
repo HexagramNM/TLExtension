@@ -33,19 +33,7 @@ namespace TLExtension
         Timer HTMLGetterTimer;
 
         public bool invoked { get; set; } = false;
-
-        public static readonly BindableProperty UriProperty = BindableProperty.Create(
-            propertyName: "Uri",
-            returnType: typeof(string),
-            declaringType: typeof(TLExtensionWebView),
-            defaultValue: default(string));
-
-        public string Uri
-        {
-            get { return (string)GetValue(UriProperty); }
-            set { SetValue(UriProperty, value); }
-        }
-
+        
         public static readonly BindableProperty EnterFullScreenCmmandProperty =
             BindableProperty.Create(
                 propertyName: "EnterFullScreenCommand",
@@ -53,7 +41,7 @@ namespace TLExtension
                 declaringType: typeof(TLExtensionWebView),
                 defaultValue: new Command(async (view) => await DefaultEnterAsync((View)view))
                 );
-
+        
         public ICommand EnterFullScreenCommand
         {
             get => (ICommand)GetValue(EnterFullScreenCmmandProperty);
