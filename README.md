@@ -18,7 +18,20 @@ Twitter Liteに対し、下記の拡張を行ったXamarin.Forms製のAndroidア
 
 - Twitter REST APIとの認証機能（BlankのページのところにAPIを使用した拡張をこのアプリに追加実装することができます。）
 
+このアプリを作った際の記事です。よろしければお読みください。
+
+[Xamarin.FormsでAndroid向けTwitterアプリケーションを開発したときに困ったこと ~WebView編~](https://qiita.com/HexagramNM/items/ccbaf1345c4109e2e626)
+
+[Xamarin.FormsでAndroid向けTwitterアプリケーションを開発したときに困ったこと ~メディア編~](https://qiita.com/HexagramNM/items/90a0f03e0d3d455d0d40)
+
 このソースコードを使用してTwitterアプリを作成し、公開する場合は、このリポジトリ内のMIT_license.txtの内容をどこかしらに表示するようにしてください。
+
+
+## フルスクリーン周りの実装で使用したコードの著作権表示
+
+Copyright (c) 2018 Muhammad Haggag
+
+Released under [the MIT License](https://github.com/mhaggag/XFAndroidFullScreenWebView/blob/master/LICENSE.md)
 
 
 ## 導入方法（Visual Studio 2017で実装しております。）
