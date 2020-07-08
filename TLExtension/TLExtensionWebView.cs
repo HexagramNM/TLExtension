@@ -33,7 +33,7 @@ namespace TLExtension
         Timer HTMLGetterTimer;
 
         public bool invoked { get; set; } = false;
-        
+
         public static readonly BindableProperty EnterFullScreenCmmandProperty =
             BindableProperty.Create(
                 propertyName: "EnterFullScreenCommand",
@@ -41,7 +41,7 @@ namespace TLExtension
                 declaringType: typeof(TLExtensionWebView),
                 defaultValue: new Command(async (view) => await DefaultEnterAsync((View)view))
                 );
-        
+
         public ICommand EnterFullScreenCommand
         {
             get => (ICommand)GetValue(EnterFullScreenCmmandProperty);
@@ -277,6 +277,11 @@ namespace TLExtension
                     if (currentUrl.Contains("/status/") && currentUrl.Contains("/photo/"))
                     {
                         //画像の場合
+                        App.SetEnableSwipePaging(false);
+                    }
+                    else if (currentUrl.EndsWith("/photo") || currentUrl.EndsWith("/header_photo"))
+                    {
+                        //アイコンorヘッダ画像の場合
                         App.SetEnableSwipePaging(false);
                     }
                     else
