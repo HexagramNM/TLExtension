@@ -268,8 +268,9 @@ namespace TLExtension
             if (invoked)
             {
                 invoked = false;
-                String keyUrlSentence = "\"og:url\" content=\"";
-                currentUrl = getSubstringBetweenStartAndEnd(currentHTML, keyUrlSentence, "\"", false, false);
+                String keyUrlStartSentence = "<link href=\"";
+                String keyUrlEndSentence = "\"";
+                currentUrl = getSubstringBetweenStartAndEnd(currentHTML, keyUrlStartSentence, keyUrlEndSentence, false, false);
 
                 if (currentUrl != previousUrl)
                 {

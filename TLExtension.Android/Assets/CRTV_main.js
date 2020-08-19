@@ -28,7 +28,7 @@ function showCitedRTLink() {
     var reSearch = /^https:\/\/mobile.twitter.com\/search\?q=https(:\/\/|\%3(A|a)\%2(F|f)\%2(F|f))twitter.com(\/|\%2(F|f))([a-z]|[A-Z]|[0-9]|_)*(\/|\%2(F|f))status(\/|\%2(F|f))[0-9]*/;
     var isSearchWindow = reSearch.test(currentURL);
     if (isSearchWindow) {
-        var citedRTClass = "css-1dbjc4n r-9x6qib r-t23y2h r-rs99b7 r-1loqt21 r-1u9bbp9 r-1ny4l3l r-1udh08x r-o7ynqc r-6416eg";
+        var citedRTClass = "css-1dbjc4n r-9x6qib r-1ylenci r-rs99b7 r-1loqt21 r-1u9bbp9 r-1ny4l3l r-1udh08x r-o7ynqc r-6416eg";
         var citedRT = document.getElementsByClassName(citedRTClass);
         for (var idx = 1; idx < citedRT.length; idx++) {
             citedRT[idx].remove();
