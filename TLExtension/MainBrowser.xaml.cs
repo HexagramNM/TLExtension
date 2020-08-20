@@ -133,6 +133,48 @@ namespace TLExtension
             isVideo = false;
         }
 
+        private void getProfileImageInfo(string currentDetectUrl, string currentDetectHTML, string keyImageUrlSentence)
+        {
+            String tmpPageHTML = String.Copy(currentDetectHTML);
+            
+            string currentImageUrl = TLExtensionWebView.getSubstringBetweenStartAndEnd(tmpPageHTML,
+                keyImageUrlSentence, "&quot;", true, false);
+            if (currentImageUrl != "")
+            {
+                if (detectImageUrl != currentImageUrl)
+                {
+                    String userId = "";
+                    if (keyImageUrlSentence == "https://pbs.twimg.com/profile_images/")
+                    {
+                        userId = TLExtensionWebView.getSubstringBetweenStartAndEnd(currentDetectUrl, "/mobile.twitter.com/", "/photo", false, false);
+                    }
+                    else if (keyImageUrlSentence == "https://pbs.twimg.com/profile_banners/")
+                    {
+                        userId = TLExtensionWebView.getSubstringBetweenStartAndEnd(currentDetectUrl, "/mobile.twitter.com/", "/header_photo", false, false);
+                    }
+                    
+                    if (userId == "" )
+                    {
+                        userId = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                    }
+                    if (keyImageUrlSentence == "https://pbs.twimg.com/profile_images/")
+                    {
+                        detectMediaFileName = userId + "_icon.jpg";
+                    }
+                    else if (keyImageUrlSentence == "https://pbs.twimg.com/profile_banners/")
+                    {
+                        detectMediaFileName = userId + "_header.jpg";
+                    }
+                    else
+                    {
+                        detectMediaFileName = userId + "_other.jpg";
+                    }
+                    detectImageUrl = currentImageUrl;
+                }
+            }
+            isVideo = false;
+        }
+
         private void getTweetVideoInfo(string currentDetectUrl, string currentDetectHTML)
         {
             List<String> keyVideoSentenceList = new List<String>();
@@ -190,6 +232,16 @@ namespace TLExtension
             {
                 //画像の場合
                 getTweetImageInfo(currentDetectUrl, currentDetectHTML);
+            }
+            else if (currentDetectUrl.EndsWith("/photo"))
+            {
+                //アイコンの場合
+                getProfileImageInfo(currentDetectUrl, currentDetectHTML, "https://pbs.twimg.com/profile_images/");
+            }
+            else if (currentDetectUrl.EndsWith("/header_photo"))
+            {
+                //ヘッダ画像の場合
+                getProfileImageInfo(currentDetectUrl, currentDetectHTML, "https://pbs.twimg.com/profile_banners/");
             }
             else if (currentDetectUrl.Contains("/status/"))
             {
