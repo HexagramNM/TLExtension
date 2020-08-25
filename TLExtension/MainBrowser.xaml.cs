@@ -181,11 +181,18 @@ namespace TLExtension
             int hitKeyVideoSentenceIndex = 0;
             keyVideoSentenceList.Add("https://pbs.twimg.com/ext_tw_video_thumb");
             keyVideoSentenceList.Add("https://pbs.twimg.com/tweet_video_thumb");
+            keyVideoSentenceList.Add("https://pbs.twimg.com/amplify_video_thumb");
+            keyVideoSentenceList.Add("https://pbs.twimg.com/media");
             int videoThumbnailIndex = -1;
             //本体のツイートの最初のクラスと、そのツイートの日時を示すクラスの間に制限する。
             //こうすることで、リプライにぶら下がってる動画は無視できるようになる。
             string targetTweetArticleHTML = TLExtensionWebView.getSubstringBetweenStartAndEnd(currentDetectHTML,
                 "css-1dbjc4n r-psjefw", "css-1dbjc4n r-1h1bdhe", false, false);
+            if (!targetTweetArticleHTML.Contains("埋め込み動画"))
+            {
+                //そのツイートに動画はない
+                return;
+            }
             foreach (String key in keyVideoSentenceList)
             {
                 videoThumbnailIndex = targetTweetArticleHTML.IndexOf(key);
