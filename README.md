@@ -20,9 +20,9 @@ Twitter Liteに対し、下記の拡張を行ったXamarin.Forms製のAndroidア
 
 このアプリを作った際の記事です。よろしければお読みください。
 
-[Xamarin.FormsでAndroid向けTwitterアプリケーションを開発したときに困ったこと ~WebView編~](https://qiita.com/HexagramNM/items/ccbaf1345c4109e2e626)
+[Xamarin.FormsでAndroid向けTwitterアプリケーションを開発したときに困ったこと \~WebView編\~](https://qiita.com/HexagramNM/items/ccbaf1345c4109e2e626)
 
-[Xamarin.FormsでAndroid向けTwitterアプリケーションを開発したときに困ったこと ~メディア編~](https://qiita.com/HexagramNM/items/90a0f03e0d3d455d0d40)
+[Xamarin.FormsでAndroid向けTwitterアプリケーションを開発したときに困ったこと \~メディア編\~](https://qiita.com/HexagramNM/items/90a0f03e0d3d455d0d40)
 
 このソースコードを使用してTwitterアプリを作成し、公開する場合は、このリポジトリ内のMIT_license.txtの内容をどこかしらに表示するようにしてください。
 
