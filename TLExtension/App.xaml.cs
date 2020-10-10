@@ -106,6 +106,8 @@ namespace TLExtension
         private TabbedPage1 thisTabbedPage;
         private List<View> stackSettingView;
 
+        private string activationLink;
+
         public App()
         {
             currentApp = this;
@@ -115,6 +117,7 @@ namespace TLExtension
             authorized = new AuthorizedEventHandler(() => { });
             stackSettingView = new List<View>();
 
+            activationLink = "";
             InitializeComponent();
 
             thisTabbedPage = new TabbedPage1();
@@ -162,6 +165,11 @@ namespace TLExtension
 
         public void setStartLink(string uri)
         {
+            if (uri == activationLink)
+            {
+                return;
+            }
+            activationLink = uri;
             (getContentPage("MainBrowser") as MainBrowser).web.startLink = uri;
             if (t == null)
             {
@@ -272,5 +280,6 @@ namespace TLExtension
             // Handle when your app resumes
             restarted();
         }
+        
 	}
 }

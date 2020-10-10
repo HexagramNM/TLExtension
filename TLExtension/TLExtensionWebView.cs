@@ -23,6 +23,7 @@ namespace TLExtension
     {
         public Action reloadAction = null;
         public Action clearHistoryAction = null;
+        public Action clearCacheAction = null;
         public Action<String> imageDownloadBloadcastAction = null;
         public ActivityIndicator indicator;
         Action<string> action;
@@ -83,6 +84,7 @@ namespace TLExtension
                 App.registerRestartEvent(() => { HTMLGetterTimer.Start(); });
                 HTMLGetterTimer.Start();
             });
+            App.registerStopEvent(() => { clearCache(); });
         }
 
         //webview上のページに対してjavascriptを実行するためのメソッド
@@ -122,6 +124,11 @@ namespace TLExtension
         public void clearHistory()
         {
             clearHistoryAction?.Invoke();
+        }
+
+        public void clearCache()
+        {
+            clearCacheAction?.Invoke();
         }
         //リロードや履歴の消去　ここまで
 

@@ -48,6 +48,7 @@ namespace TLExtension.Droid
             _webView = (TLExtensionWebView)e.NewElement;
             _webView.reloadAction = new Action(() => { Control.Reload(); });
             _webView.clearHistoryAction = new Action(() => { Control.ClearHistory(); });
+            _webView.clearCacheAction = new Action(() => { Control.ClearCache(true); });
             _webView.imageDownloadBloadcastAction = new Action<String>((string imagePath) => {
                 _context.SendBroadcast(new Intent(Intent.ActionMediaScannerScanFile, Android.Net.Uri.Parse("file://" + imagePath)));
             }); 
