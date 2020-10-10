@@ -259,7 +259,11 @@ namespace TLExtension
             {
                 if (detectImageUrl != previousImageUrl && detectImageUrl != "")
                 {
-                    detectImageSource.Source = ImageSource.FromUri(new Uri(detectImageUrl));
+                    detectImageSource.Source = new UriImageSource
+                    {
+                        Uri = new Uri(detectImageUrl),
+                        CachingEnabled = false
+                    };
                 }
                 imageDownloadButton.IsEnabled = (detectImageUrl != "" && !isDownloading);
 

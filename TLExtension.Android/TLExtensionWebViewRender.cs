@@ -28,6 +28,14 @@ namespace TLExtension.Droid
         protected override void OnElementChanged(ElementChangedEventArgs<Xamarin.Forms.WebView> e)
         {
             base.OnElementChanged(e);
+            if (Control != null)
+            {
+                //キャッシュの削除
+                //https://www.project-respite.com/no-cached-webview/
+                Control.ClearCache(true);
+                Control.Settings.SetAppCacheEnabled(false);
+                Control.Settings.CacheMode = Android.Webkit.CacheModes.NoCache;
+            }
             if (e.OldElement != null)
             {
                 Control.RemoveJavascriptInterface("jsBridge");
