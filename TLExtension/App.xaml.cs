@@ -47,6 +47,13 @@ https://github.com/mhaggag/XFAndroidFullScreenWebView/blob/master/LICENSE.md
 //（読み込むべきファイルタイプの変更）
 //https://github.com/kwmt/WebViewInputSample
 
+//キャッシュの削除
+//https://www.project-respite.com/no-cached-webview/
+
+//アプリリンクのやり方（Twitterリンクをアプリに関連付ける方法）
+//https://qiita.com/HisakoIsaka/items/1fe496741d47d5b1dfdd
+//https://chomado.com/programming/c-sharp/xamarin-android-launch-with-url-scheme/
+
 using Android.Content.Res;
 using CoreTweet;
 using CoreTweet.Core;
@@ -148,8 +155,22 @@ namespace TLExtension
             }
             else
             {
-                openUrl("https://mobile.twitter.com/home/");
+                (getContentPage("MainBrowser") as MainBrowser).web.twitterStart();
                 authorized();
+            }
+        }
+
+        public void setStartLink(string uri)
+        {
+            (getContentPage("MainBrowser") as MainBrowser).web.startLink = uri;
+            if (t == null)
+            {
+                //認証していない場合は認証を行う。
+                (getContentPage("MainBrowser") as MainBrowser).web.authorizeAPI(cKey, cSecret);
+            }
+            else
+            {
+                (getContentPage("MainBrowser") as MainBrowser).web.twitterStart();
             }
         }
 

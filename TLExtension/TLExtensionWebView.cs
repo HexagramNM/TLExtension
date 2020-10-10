@@ -28,9 +28,9 @@ namespace TLExtension
         Action<string> action;
         public string DCIMPath;
         HttpClient httpClient;
-        //Timer CRTVTimer;
         string CRTVjs;
         Timer HTMLGetterTimer;
+        public string startLink = "https://mobile.twitter.com/home/";
 
         public bool invoked { get; set; } = false;
 
@@ -88,11 +88,13 @@ namespace TLExtension
         //webview上のページに対してjavascriptを実行するためのメソッド
         public void RegisterAction(Action<string> callback)
         {
+            invoked = false;
             action = callback;
         }
 
         public void Cleanup()
         {
+            invoked = false;
             action = null;
         }
 
@@ -197,14 +199,20 @@ namespace TLExtension
             string authSource = "";
             RegisterAction(data => { authSource = data; });
             Eval("javascript:invokeCSharpAction(document.documentElement.outerHTML);");
-            while (!invoked) ;
+            while (!invoked);
             invoked = false;
             int codeIndex = authSource.IndexOf("<code>");
             if (codeIndex >= 0)
             {
                 String code = authSource.Substring(codeIndex + 6, 7);
-                Source = "https://mobile.twitter.com/home/";
+                Source = startLink;
                 App.authorizing(code);
+            }
+            else
+            {
+                indicator.IsVisible = false;
+                indicator.IsRunning = false;
+                IsVisible = true;
             }
         }
 
@@ -224,14 +232,27 @@ namespace TLExtension
             {
                 AuthProcess();
             }
-            else if (e.Url == @"https://mobile.twitter.com/home/")
+            else if (e.Url == startLink)
             {
                 indicator.IsVisible = false;
                 indicator.IsRunning = false;
                 IsVisible = true;
                 clearHistory();
+                if (startLink != "https://mobile.twitter.com/home/")
+                {
+                    startLink = "https://mobile.twitter.com/home/";
+                }
                 Navigating -= authorizingNavigatedEvent;
                 Navigated -= authorizedNavigatedEvent;
+            }
+        }
+
+        public void twitterStart()
+        {
+            Source = startLink;
+            if (startLink != "https://mobile.twitter.com/home/")
+            {
+                startLink = "https://mobile.twitter.com/home/";
             }
         }
         //認証ここまで

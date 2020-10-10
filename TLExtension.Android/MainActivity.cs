@@ -17,6 +17,13 @@ using Android;
 namespace TLExtension.Droid
 {
     [Activity(Label = "TLExtension", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [IntentFilter(new[] {Intent.ActionView},
+        Categories = new[] { Intent.CategoryBrowsable, Intent.CategoryDefault },
+        DataScheme = "https",
+        DataHost = "mobile.twitter.com",
+        DataPathPrefix = "",
+        AutoVerify = true
+        )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         private App app;
@@ -88,6 +95,20 @@ namespace TLExtension.Droid
             }
         }
 
+        protected override void OnResume()
+        {
+            base.OnResume();
+
+            Intent intent = this.Intent;
+            if (Intent.ActionView.Equals(intent.Action))
+            {
+                Android.Net.Uri uri = intent.Data;
+                if (uri != null)
+                {
+                    app.setStartLink(uri.ToString());
+                }
+            }
+        }
     }
 
 }
