@@ -18,6 +18,7 @@ namespace TLExtension
     {
         public TLExtensionWebView web;
         private ActivityIndicator loadingIndicator;
+        private Button copyLinkButton;
         private Button imageDownloadButton;
 
         bool isVideo;
@@ -38,10 +39,14 @@ namespace TLExtension
             reloadButton.HorizontalOptions = LayoutOptions.FillAndExpand;
             reloadButton.IsEnabled = true;
             reloadButton.Pressed += reloadButtonPressed;
+            copyLinkButton = new Button();
+            copyLinkButton.Text = "Copy Link";
+            copyLinkButton.HorizontalOptions = LayoutOptions.FillAndExpand;
+            copyLinkButton.IsEnabled = true;
+            copyLinkButton.Pressed += copyLinkButtonPressed;
             imageDownloadButton = new Button();
             imageDownloadButton.HeightRequest = 50;
-            imageDownloadButton.Image = 
-            imageDownloadButton.Text = "Download Last Image →";
+            imageDownloadButton.Text = "DL Image →";
             imageDownloadButton.HorizontalOptions = LayoutOptions.FillAndExpand;
             imageDownloadButton.IsEnabled = false;
             imageDownloadButton.Pressed += imageDownloadButtonPressed;
@@ -50,6 +55,7 @@ namespace TLExtension
             detectImageSource.WidthRequest = 50;
 
             buttonLayout.Children.Add(reloadButton);
+            buttonLayout.Children.Add(copyLinkButton);
             buttonLayout.Children.Add(imageDownloadButton);
             buttonLayout.Children.Add(detectImageSource);
 
@@ -86,6 +92,22 @@ namespace TLExtension
             {
                 detectImage(url, HTML);
             };
+        }
+
+        private void reloadButtonPressed(object sender, EventArgs args)
+        {
+            if (web != null)
+            {
+                web.Reload();
+            }
+        }
+
+        private void copyLinkButtonPressed(object sender, EventArgs args)
+        {
+            if (web != null)
+            {
+                DependencyService.Get<IClipBoardService>().copy(web.twitterUrl);
+            }
         }
 
         private void getTweetImageInfo(string currentDetectUrl, string currentDetectHTML)
@@ -269,21 +291,13 @@ namespace TLExtension
 
                 if (isVideo)
                 {
-                    imageDownloadButton.Text = (isDownloading ? "Downloading Video →" : "Download Last Video →");
+                    imageDownloadButton.Text = (isDownloading ? "DL Now...→" : "DL Video →");
                 }
                 else
                 {
-                    imageDownloadButton.Text = (isDownloading ? "Downloading Image →" : "Download Last Image →");
+                    imageDownloadButton.Text = (isDownloading ? "DL Now...→" : "DL Image →");
                 }
             });
-        }
-
-        private void reloadButtonPressed(object sender, EventArgs args)
-        {
-            if (web != null)
-            {
-                web.Reload();
-            }
         }
 
         private string getVideoUrlFromTweetId(string tweetId)
@@ -318,7 +332,7 @@ namespace TLExtension
             Device.BeginInvokeOnMainThread(() =>
             {
                 imageDownloadButton.IsEnabled = false;
-                imageDownloadButton.Text = (isVideo ? "Downloading Video →" : "Downloading Image →");
+                imageDownloadButton.Text = "DL Now...→";
             });
             try
             {
@@ -340,7 +354,7 @@ namespace TLExtension
                     await DisplayAlert("Failed to download media", "Failed to download the last media...", "OK");
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 await DisplayAlert("Failed to download media", "Failed to download the last media...", "OK");
             }
@@ -350,7 +364,7 @@ namespace TLExtension
                 Device.BeginInvokeOnMainThread(() =>
                 {
                     imageDownloadButton.IsEnabled = true;
-                    imageDownloadButton.Text = (isVideo ? "Download Last Video →": "Download Last Image →");
+                    imageDownloadButton.Text = (isVideo ? "DL Video →": "DL Image →");
                 });
             }
         }
@@ -359,7 +373,15 @@ namespace TLExtension
         {
             if (detectImageUrl != "")
             {
-                bool answer = await DisplayAlert("Download image", "Would you like to download the last image?", "Yes", "No");
+                bool answer = false;
+                if (isVideo)
+                {
+                    answer = await DisplayAlert("Download video", "Would you like to download the last video?", "Yes", "No");
+                }
+                else
+                {
+                    answer = await DisplayAlert("Download image", "Would you like to download the last image?", "Yes", "No");
+                }
                 if (answer)
                 {
                     await downloadImageAsync();

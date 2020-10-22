@@ -54,6 +54,9 @@ https://github.com/mhaggag/XFAndroidFullScreenWebView/blob/master/LICENSE.md
 //https://qiita.com/HisakoIsaka/items/1fe496741d47d5b1dfdd
 //https://chomado.com/programming/c-sharp/xamarin-android-launch-with-url-scheme/
 
+//クリップボードへのコピー
+//https://itblogdsi.blog.fc2.com/blog-entry-170.html
+
 using Android.Content.Res;
 using CoreTweet;
 using CoreTweet.Core;
@@ -145,7 +148,7 @@ namespace TLExtension
                     t.UserId = (long)result.Id;
                     t.ScreenName = result.ScreenName;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     t = null;
                 }
