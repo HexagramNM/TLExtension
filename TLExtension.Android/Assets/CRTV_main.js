@@ -30,7 +30,7 @@ function showCitedRTLink() {
     var reRTWithComment = /^https:\/\/mobile.twitter.com\/([a-z]|[A-Z]|[0-9]|_)*\/status\/([0-9])*\/retweets\/with_comments$/;
     var isRTWithCommentWindow = reRTWithComment.test(currentURL);
     if (isSearchWindow || isRTWithCommentWindow) {
-        var citedRTClass = "css-1dbjc4n r-9x6qib r-1ylenci r-rs99b7 r-1loqt21 r-1u9bbp9 r-1ny4l3l r-1udh08x r-o7ynqc r-6416eg";
+        var citedRTClass = "css-1dbjc4n r-1bs4hfb r-1867qdf r-rs99b7 r-1loqt21 r-1u9bbp9 r-1ny4l3l r-1udh08x r-o7ynqc r-6416eg";
         var citedRT = document.getElementsByClassName(citedRTClass);
         for (var idx = 1; idx < citedRT.length; idx++) {
             citedRT[idx].remove();
