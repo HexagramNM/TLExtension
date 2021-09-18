@@ -303,6 +303,7 @@ namespace TLExtension
                 if (currentUrl != previousUrl)
                 {
                     previousUrl = currentUrl;
+                    /*
                     if (currentUrl.Contains("/status/") && currentUrl.Contains("/photo/"))
                     {
                         //画像の場合
@@ -316,6 +317,16 @@ namespace TLExtension
                     else
                     {
                         App.SetEnableSwipePaging(true);
+                    }
+                    */
+                    if (currentUrl.EndsWith("/home") || currentUrl.EndsWith("/home/"))
+                    {
+                        //ホーム画面のみスワイプ移動を許可する（他の画面だとスワイプするものがなんだかんだある。）
+                        App.SetEnableSwipePaging(true);
+                    }
+                    else
+                    {
+                        App.SetEnableSwipePaging(false);
                     }
                 }
 
