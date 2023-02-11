@@ -25,6 +25,10 @@
 //DCIMのパス取得
 //https://forums.xamarin.com/discussion/175085/i-need-to-save-ad-in-image-in-dcim
 
+//Android10以上用のメディア保存方法 (MediaStore api)
+//https://akira-watson.com/android/mediastore-save.html
+//https://dev.classmethod.jp/articles/android-gallery/
+
 //別ブラウザでURLを開く方法
 //https://itblogdsi.blog.fc2.com/blog-entry-171.html
 
@@ -53,6 +57,8 @@ https://github.com/mhaggag/XFAndroidFullScreenWebView/blob/master/LICENSE.md
 //アプリリンクのやり方（Twitterリンクをアプリに関連付ける方法）
 //https://qiita.com/HisakoIsaka/items/1fe496741d47d5b1dfdd
 //https://chomado.com/programming/c-sharp/xamarin-android-launch-with-url-scheme/
+//（共有による情報発信との関連づけ）
+//http://furuya02.hatenablog.com/entry/20140429/1399767377
 
 //クリップボードへのコピー
 //https://itblogdsi.blog.fc2.com/blog-entry-170.html
@@ -67,6 +73,7 @@ using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.Xaml;
+using static Android.Telephony.CarrierConfigManager;
 
 [assembly: XamlCompilation (XamlCompilationOptions.Compile)]
 namespace TLExtension
@@ -130,39 +137,45 @@ namespace TLExtension
 
             //通知（App側で一括管理）
             DependencyService.Get<INotificationService>().Regist();
+        }
 
-            //すでに認証しているか確認
-            string aToken = "";
-            string aSecret = "";
-            string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + accessTokenFilePath;
-            if (File.Exists(path))
-            {
-                StreamReader readFile = new StreamReader(path, Encoding.GetEncoding("utf-16"));
-                aToken = readFile.ReadLine();
-                aSecret = readFile.ReadLine();
-                readFile.Close();
-                t = CoreTweet.Tokens.Create(cKey, cSecret, aToken, aSecret);
-                try
-                {
-                    UserResponse result = t.Account.VerifyCredentials();
-                    t.UserId = (long)result.Id;
-                    t.ScreenName = result.ScreenName;
-                }
-                catch (Exception)
-                {
-                    t = null;
-                }
-            }
-
+        public void authorizeProcess()
+        {
             if (t == null)
             {
-                //認証していない場合は認証を行う。
-                (getContentPage("MainBrowser") as MainBrowser).web.authorizeAPI(cKey, cSecret);
-            }
-            else
-            {
-                (getContentPage("MainBrowser") as MainBrowser).web.twitterStart();
-                authorized();
+                //すでに認証しているか確認
+                string aToken = "";
+                string aSecret = "";
+                string path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + accessTokenFilePath;
+                if (File.Exists(path))
+                {
+                    StreamReader readFile = new StreamReader(path, Encoding.GetEncoding("utf-16"));
+                    aToken = readFile.ReadLine();
+                    aSecret = readFile.ReadLine();
+                    readFile.Close();
+                    t = CoreTweet.Tokens.Create(cKey, cSecret, aToken, aSecret);
+                    try
+                    {
+                        UserResponse result = t.Account.VerifyCredentials();
+                        t.UserId = (long)result.Id;
+                        t.ScreenName = result.ScreenName;
+                    }
+                    catch (Exception)
+                    {
+                        t = null;
+                    }
+                }
+
+                if (t == null)
+                {
+                    //認証していない場合は認証を行う。
+                    (getContentPage("MainBrowser") as MainBrowser).web.authorizeAPI(cKey, cSecret);
+                }
+                else
+                {
+                    (getContentPage("MainBrowser") as MainBrowser).web.twitterStart();
+                    authorized();
+                }
             }
         }
 
@@ -174,15 +187,12 @@ namespace TLExtension
             }
             activationLink = uri;
             (getContentPage("MainBrowser") as MainBrowser).web.startLink = uri;
-            if (t == null)
-            {
-                //認証していない場合は認証を行う。
-                (getContentPage("MainBrowser") as MainBrowser).web.authorizeAPI(cKey, cSecret);
-            }
-            else
-            {
-                (getContentPage("MainBrowser") as MainBrowser).web.twitterStart();
-            }
+            authorizeProcess();
+        }
+
+        public void autoTweet(string text)
+        {
+            (getContentPage("MainBrowser") as MainBrowser).setAutoTweet(text);
         }
 
         public static void addCustomSetting(View view)
@@ -211,7 +221,17 @@ namespace TLExtension
         }
 
         public static void SetEnableSwipePaging (bool value) {
-            currentApp.thisTabbedPage.On<Xamarin.Forms.PlatformConfiguration.Android>().SetIsSwipePagingEnabled(value);
+            currentApp.thisTabbedPage.On<Xamarin.Forms.PlatformConfiguration.Android>().
+                SetIsSwipePagingEnabled(value);
+        }
+
+        public static void ResetSoftwareKeyboardStatus()
+        {
+            currentApp.On<Xamarin.Forms.PlatformConfiguration.Android>().
+                UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Pan);
+
+            currentApp.On<Xamarin.Forms.PlatformConfiguration.Android>().
+                UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
         }
 
         public static Page getContentPage(string className)
@@ -264,6 +284,11 @@ namespace TLExtension
         public static void notify(string title, string body, int id)
         {
             DependencyService.Get<INotificationService>().On(title, body, id);
+        }
+
+        public static void terminate()
+        {
+            currentApp.Quit();
         }
 
         protected override void OnStart ()

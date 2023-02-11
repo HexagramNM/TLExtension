@@ -16,13 +16,17 @@ using Android;
 
 namespace TLExtension.Droid
 {
-    [Activity(Label = "TLExtension", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "TLExtension", Icon = "@mipmap/ic_tlex", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     [IntentFilter(new[] {Intent.ActionView},
         Categories = new[] { Intent.CategoryBrowsable, Intent.CategoryDefault },
         DataScheme = "https",
         DataHost = "mobile.twitter.com",
         DataPathPrefix = "",
         AutoVerify = true
+        )]
+    [IntentFilter(new[] { Intent.ActionSend },
+        Categories = new[] { Intent.CategoryDefault },
+        DataMimeType = "text/plain"
         )]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
@@ -45,18 +49,21 @@ namespace TLExtension.Droid
             app.On<Xamarin.Forms.PlatformConfiguration.Android>().
                 UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
 
-            if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) != (int)Permission.Granted
-                && ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) != (int)Permission.Granted)
+            if (Build.VERSION.SdkInt < Android.OS.BuildVersionCodes.Q)
             {
-                ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.ReadExternalStorage, Manifest.Permission.WriteExternalStorage }, 26);
-            }
-            else if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) != (int)Permission.Granted)
-            {
-                ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.ReadExternalStorage }, 26);
-            }
-            else if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) != (int)Permission.Granted)
-            {
-                ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.WriteExternalStorage }, 26);
+                if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) != (int)Permission.Granted
+                    && ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) != (int)Permission.Granted)
+                {
+                    ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.ReadExternalStorage, Manifest.Permission.WriteExternalStorage }, 26);
+                }
+                else if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) != (int)Permission.Granted)
+                {
+                    ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.ReadExternalStorage }, 26);
+                }
+                else if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) != (int)Permission.Granted)
+                {
+                    ActivityCompat.RequestPermissions(this, new String[] { Manifest.Permission.WriteExternalStorage }, 26);
+                }
             }
         }
 
@@ -107,6 +114,14 @@ namespace TLExtension.Droid
                 {
                     app.setStartLink(uri.ToString());
                 }
+            }
+            else if (Intent.ActionSend.Equals(intent.Action))
+            {
+                app.autoTweet(Intent.Extras.Get("android.intent.extra.TEXT").ToString());
+            }
+            else
+            {
+                app.authorizeProcess();
             }
         }
     }

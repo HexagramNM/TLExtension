@@ -24,14 +24,19 @@ namespace TLExtension
         public Action reloadAction = null;
         public Action clearHistoryAction = null;
         public Action clearCacheAction = null;
-        public Action<String> imageDownloadBloadcastAction = null;
+        public Action<string, byte[]> saveMediaAction = null;
+        public Action<bool> switchKeepOn = null;
         public ActivityIndicator indicator;
         Action<string> action;
-        public string DCIMPath;
         HttpClient httpClient;
         string CRTVjs;
+        string TimelineLoaderJs;
+        bool autoUpdatingTimeline;
         Timer HTMLGetterTimer;
+        Timer TimelineLoaderTimer;
         public string startLink = "https://mobile.twitter.com/home/";
+        private string autoTweet = "";
+        private bool isTextAreaExist = false;
 
         public bool invoked { get; set; } = false;
 
@@ -40,7 +45,7 @@ namespace TLExtension
                 propertyName: "EnterFullScreenCommand",
                 returnType: typeof(ICommand),
                 declaringType: typeof(TLExtensionWebView),
-                defaultValue: new Command(async (view) => await DefaultEnterAsync((View)view))
+                defaultValue: new Command(async (view) => await DefaultEnterAsync((Xamarin.Forms.View)view))
                 );
 
         public ICommand EnterFullScreenCommand
@@ -77,6 +82,16 @@ namespace TLExtension
             {
                 CRTVjs = sr.ReadToEnd();
             }
+
+            autoUpdatingTimeline = false;
+            using (StreamReader sr = new StreamReader(assets.Open("TimelineLoader.js")))
+            {
+                TimelineLoaderJs = sr.ReadToEnd();
+            }
+            TimelineLoaderTimer = new Timer(8000);
+            TimelineLoaderTimer.Elapsed += (object s, ElapsedEventArgs e) => { updateTimeline(); };
+            TimelineLoaderTimer.Start();
+
             indicator = i_indicator;
 
             App.registerAuthorizedEvent(() => {
@@ -113,7 +128,7 @@ namespace TLExtension
         //webview上のページに対してjavascriptを実行するためのメソッド　ここまで
 
         //リロードや履歴の消去
-        public void Reload()
+        public void CustomizedReload()
         {
             //キーボードがもとに戻らないときの対策
             IsVisible = false;
@@ -132,43 +147,41 @@ namespace TLExtension
         }
         //リロードや履歴の消去　ここまで
 
+        //共有時の自動ツイート入力
+        public void autoInputTweet(string tweetText)
+        {
+            autoTweet = tweetText;
+            HTMLGetterTimer.Elapsed += autoInputProcess;
+            HTMLGetterTimer.Start();
+            Source = @"https://mobile.twitter.com/compose/tweet";
+        }
+
+        private void autoInputProcess(object s, ElapsedEventArgs e)
+        {
+            if (currentUrl == @"https://mobile.twitter.com/compose/tweet")
+            {
+                if (isTextAreaExist)
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        Eval("javascript:autoTweet(\"" + autoTweet + "\");");
+                    });
+                } 
+            }
+        }
+
+        //共有時の自動ツイート入力　ここまで
+
         //urlを経由したメディアダウンロード
         public async Task<bool> downloadMediaFromTwitter(string downloadUrl, string saveFileName)
         {
-            byte[] imageData;
-            string saveFolderName = "TLExtensionMedia";
             using (HttpResponseMessage httpResponse = await httpClient.GetAsync(downloadUrl))
             {
                 if (httpResponse.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    imageData = await httpResponse.Content.ReadAsByteArrayAsync();
-                    IFolder DCIMFolder = await FileSystem.Current.GetFolderFromPathAsync(DCIMPath);
-                    IFolder saveFolder;
-                    ExistenceCheckResult exist = await DCIMFolder.CheckExistsAsync(saveFolderName);
-                    if (exist == ExistenceCheckResult.FolderExists)
-                    {
-                        saveFolder = await DCIMFolder.GetFolderAsync(saveFolderName);
-                    }
-                    else
-                    {
-                        saveFolder = await DCIMFolder.CreateFolderAsync(saveFolderName, CreationCollisionOption.ReplaceExisting);
-                    }
-                    IFile file = await saveFolder.CreateFileAsync(saveFileName, CreationCollisionOption.ReplaceExisting);
-                    using (System.IO.Stream stream = await file.OpenAsync(PCLStorage.FileAccess.ReadAndWrite))
-                    {
-                        stream.Write(imageData, 0, imageData.Length);
-                    }
-                    System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Path);
-                    DateTime nowTime = DateTime.Now;
-                    fileInfo.CreationTime = nowTime;
-                    fileInfo.LastWriteTime = nowTime;
-                    fileInfo.LastAccessTime = nowTime;
-                    fileInfo.Refresh();
-
-                    //メディアへの通知
-                    imageDownloadBloadcastAction?.Invoke(file.Path);
+                    byte[] imageData = await httpResponse.Content.ReadAsByteArrayAsync();
+                    saveMediaAction?.Invoke(saveFileName, imageData);
                     return true;
-                    
                 }
                 return false;
             }
@@ -177,7 +190,7 @@ namespace TLExtension
         //urlを経由したメディアダウンロード　ここまで
 
         //フルスクリーンを実現するためのメソッド
-        private static async Task DefaultEnterAsync(View view)
+        private static async Task DefaultEnterAsync(Xamarin.Forms.View view)
         {
             var page = new ContentPage
             {
@@ -299,12 +312,15 @@ namespace TLExtension
                 String keyUrlStartSentence = "<link href=\"";
                 String keyUrlEndSentence = "\"";
                 currentUrl = getSubstringBetweenStartAndEnd(currentHTML, keyUrlStartSentence, keyUrlEndSentence, false, false);
+                isTextAreaExist = currentHTML.Contains("textarea");
 
                 if (currentUrl != previousUrl)
                 {
                     previousUrl = currentUrl;
-                    /*
-                    if (currentUrl.Contains("/status/") && currentUrl.Contains("/photo/"))
+                    
+                    App.ResetSoftwareKeyboardStatus();
+                    
+                    /*if (currentUrl.Contains("/status/") && currentUrl.Contains("/photo/"))
                     {
                         //画像の場合
                         App.SetEnableSwipePaging(false);
@@ -317,8 +333,7 @@ namespace TLExtension
                     else
                     {
                         App.SetEnableSwipePaging(true);
-                    }
-                    */
+                    }*/
                     if (currentUrl.EndsWith("/home") || currentUrl.EndsWith("/home/"))
                     {
                         //ホーム画面のみスワイプ移動を許可する（他の画面だとスワイプするものがなんだかんだある。）
@@ -350,6 +365,25 @@ namespace TLExtension
             }
         }
         //ツイッター内リンク管理ここまで
+
+        //ホーム画面のタイムライン更新
+        public void switchAutoUpdatingTimeline(bool state)
+        {
+            switchKeepOn?.Invoke(state);
+            autoUpdatingTimeline = state;
+        }
+
+        public void updateTimeline()
+        {
+            if (autoUpdatingTimeline)
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    Eval(TimelineLoaderJs);
+                    Eval("updateTimeline();");
+                });
+            }
+        }
 
     }
 }

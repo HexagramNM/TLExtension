@@ -28,6 +28,9 @@ namespace TLExtension
         string detectMediaFileName;
         Image detectImageSource;
         bool isDownloading;
+        bool autoTweetMode;
+        Color switchOnThumbColor;
+        Color switchOffThumbColor;
 
         private void makeUI()
         {
@@ -68,10 +71,41 @@ namespace TLExtension
             web = new TLExtensionWebView(loadingIndicator);
             web.VerticalOptions = LayoutOptions.FillAndExpand;
 
+            StackLayout updateTimelineLayout = new StackLayout();
+            updateTimelineLayout.Orientation = StackOrientation.Horizontal;
+            Switch updateTimelineSwitch = new Switch();
+            updateTimelineSwitch.HeightRequest = 25;
+            switchOnThumbColor = new Color(0, 190.0 / 255.0, 1.0);
+            switchOffThumbColor = new Color(120.0 / 255.0, 120.0 / 255.0, 120.0 / 255.0);
+            updateTimelineSwitch.OnColor = new Color(180.0 / 255.0, 230.0 / 255.0, 1.0);
+            updateTimelineSwitch.ThumbColor = switchOffThumbColor;
+            updateTimelineSwitch.IsToggled = false;
+            updateTimelineSwitch.Toggled += (e, s) => { 
+                web.switchAutoUpdatingTimeline(updateTimelineSwitch.IsToggled); 
+                if (updateTimelineSwitch.IsToggled)
+                {
+                    Device.BeginInvokeOnMainThread(() => {
+                        updateTimelineSwitch.ThumbColor = switchOnThumbColor;
+                    });
+                }
+                else
+                {
+                    Device.BeginInvokeOnMainThread(() => {
+                        updateTimelineSwitch.ThumbColor = switchOffThumbColor;
+                    });
+                }
+            };
+            Label updateTimelineLabel = new Label();
+            updateTimelineLabel.HeightRequest = 25;
+            updateTimelineLabel.Text = "Auto Update Home Timeline";
+            updateTimelineLayout.Children.Add(updateTimelineSwitch);
+            updateTimelineLayout.Children.Add(updateTimelineLabel);
+
             StackLayout layout = new StackLayout();
             layout.Orientation = StackOrientation.Vertical;
             layout.HorizontalOptions = LayoutOptions.FillAndExpand;
             layout.Children.Add(buttonLayout);
+            layout.Children.Add(updateTimelineLayout);
             layout.Children.Add(loadingIndicator);
             layout.Children.Add(web);
             Content = layout;
@@ -88,6 +122,7 @@ namespace TLExtension
             detectMediaFileName = "";
             isDownloading = false;
             isVideo = false;
+            autoTweetMode = false;
             web.twitterHTMLChanged += (string url, string HTML) =>
             {
                 detectImage(url, HTML);
@@ -98,7 +133,7 @@ namespace TLExtension
         {
             if (web != null)
             {
-                web.Reload();
+                web.CustomizedReload();
             }
         }
 
@@ -209,7 +244,7 @@ namespace TLExtension
             //本体のツイートの最初のクラスと、そのツイートの日時を示すクラスの間に制限する。
             //こうすることで、リプライにぶら下がってる動画は無視できるようになる。
             string targetTweetArticleHTML = TLExtensionWebView.getSubstringBetweenStartAndEnd(currentDetectHTML,
-                "css-1dbjc4n r-psjefw", "css-1dbjc4n r-1h1bdhe", false, false);
+                "css-1dbjc4n r-a1ub67", "css-1dbjc4n r-vpgt9t", false, false);
             if (!targetTweetArticleHTML.Contains("埋め込み動画"))
             {
                 //そのツイートに動画はない
@@ -306,7 +341,7 @@ namespace TLExtension
             long.TryParse(tweetId, out tweetIdLong);
             List<long> tweetIdList = new List<long>();
             tweetIdList.Add(tweetIdLong);
-            ListedResponse<Status> statusList = App.t.Statuses.Lookup(tweetIdList, false, true);
+            ListedResponse<Status> statusList = App.t.Statuses.Lookup(tweetIdList, false, true, false, TweetMode.Extended);
             Status targetStatus = statusList[0];
             VideoVariant[] videoInfoList = targetStatus.ExtendedEntities.Media[0].VideoInfo.Variants;
             int tmpBitrate = -1;
@@ -347,7 +382,7 @@ namespace TLExtension
                 if (await web.downloadMediaFromTwitter(downloadUrl, detectMediaFileName))
                 {
 
-                    await DisplayAlert("Successed to download image", "Successed to download the last media!", "OK");
+                    await DisplayAlert("Successed to download media", "Successed to download the last media!", "OK");
                 }
                 else
                 {
@@ -388,11 +423,24 @@ namespace TLExtension
                 }
             }
         }
+
+        public void setAutoTweet(string text)
+        {
+            autoTweetMode = true;
+            web.autoInputTweet(text);
+        }
         
         protected override bool OnBackButtonPressed()
         {
-            web.GoBack();
-            return true;
+            if (autoTweetMode)
+            {
+                return false;
+            }
+            else
+            {
+                web.GoBack();
+                return true;
+            }
         }
 
         

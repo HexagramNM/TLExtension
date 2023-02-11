@@ -16,7 +16,7 @@ namespace TLExtension
     {
         public TabbedPage1 ()
         {
-            InitializeComponent();            
+            InitializeComponent();   
         }
     }
 }

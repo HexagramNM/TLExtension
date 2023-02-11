@@ -4,7 +4,7 @@
             xmlns:local="clr-namespace:TLExtension"
             x:Class="TLExtension.TabbedPage1">
   <!--Pages can be added as references or inline-->
-  <local:MainBrowser Title="Twitter" />
-    <local:BlankPage Title="Blank" />
-    <local:SettingPage Title="Setting" />
+  <local:MainBrowser Title="Timeline" />
+  <local:BlankPage Title="Blank" />
+  <local:SettingPage Title="Setting" />
 </TabbedPage>

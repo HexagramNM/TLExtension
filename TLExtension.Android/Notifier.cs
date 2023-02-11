@@ -28,12 +28,12 @@ public class MyNotificationService : INotificationService
         Notification.Builder builder = new Notification.Builder(context)
                 .SetContentTitle(title)
                 .SetContentText(body)
-                .SetSmallIcon(Resource.Mipmap.icon);
+                .SetSmallIcon(Resource.Mipmap.not_tlex);
         Notification notification = builder.Build();
 
         NotificationManager notificationManager = (NotificationManager)context.GetSystemService(Context.NotificationService);
 
-        if (Build.VERSION.SdkInt >= Build.VERSION_CODES.O)
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
         {
             NotificationChannel notificationChannel = notificationManager.GetNotificationChannel(channelId);
             if (notificationChannel == null)
